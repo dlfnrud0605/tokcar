@@ -22,40 +22,6 @@ adb install -r --user 10 apk/TokCar_TokCar_release.apk
 adb shell am start --user 10 -n com.example.tokcar/.TokCarActivity
 ```
 
-## 이 저장소에 있는 것
-
-| 폴더 | 내용 |
-|---|---|
-| `tokcar/` | **차량용 앱** (Kotlin · Jetpack Compose). 공모전 제출 대상 |
-| `phone-app/` | 가족용 **폰 앱** (Flutter). 차량 앱과 같은 화면 · 메시지, 경로 공유는 지도로 보기 |
-| `server/` | 두 앱이 같이 쓰는 **가족 서버** (Java 21 · Spring Boot · 순수 WebSocket). **앱은 이 서버가 있어야 동작** |
-| `apk/` | 실행 가능한 release APK ([`TokCar_TokCar_release.apk`](apk/TokCar_TokCar_release.apk), 서버가 켜져 있어야 로그인됨) |
-| `start_demo.sh` | 차량 앱 설치 · 실행 + 서버 시작을 한 번에 (Linux · macOS) |
-
-## 주요 기능
-
-- **가족 대화**: 방마다 대화 · 현재 위치 · 경로 공유 카드. 안 읽은 사람 수 표시, 새 메시지는 음성으로 읽어 줌.
-- **방마다 최근 목적지**: 방 목록 카드의 `[안내]` 한 번이면 그 방의 최근 목적지로 길안내를 시작(실제 Pleos 내비에 경로 요청).
-- **15초 공유 대기**: 안내를 시작해도 공유는 바로 시작되지 않고 15초 동안 취소할 수 있음(운전 중 실수 방지).
-- **실시간 경로 공유**: 가족에게 출발 · 도착 주소, 남은 시간 · 도착 예정 시각, 정체 구간(막대)이 계속 갱신됨. 도착하면 카드가 「도착」으로 바뀌고 공유가 끝남.
-- **경유지 · 목적지 변경**: 안내 중 경유지를 넣어도 공유가 끊기지 않음. 내비에서 직접 목적지를 바꿔도 앱이 따라감.
-- **가족 폰 앱**: 위치 보내기는 핀을 옮겨 고르는 화면(장소 검색 포함). 경로 공유 카드의 `[지도 보기]`로 차가 움직이는 모습을 봄.
-
-## 테스트 환경
-
-| 항목 | 값 |
-|---|---|
-| 에뮬레이터 | **Pleos Connect v2.1.0** (AVD 이름 `Pleos_Connect_v2.1.0`, 에뮬레이터 37.2.13.0) |
-| Android | 14 (API 34) |
-| 화면 | **2560 × 1440** |
-| 설치 사용자 | `10` (Pleos 에뮬레이터는 화면이 사용자 10으로 돌아서 `adb install`에 `--user 10`을 붙입니다) |
-| Pleos SDK | Vehicle 2.3.2 · NaviHelper 3.0.5 · FusedLocation 1.1.3 · SpeechToText 3.3.1 · TextToSpeech 3.3.1 |
-| 빌드 | Android Gradle Plugin 9.4.1 · Gradle 9.6.0 · Kotlin 2.2.10 · JDK 21 · compileSdk 37 · minSdk 28 |
-| 폰 앱 | Flutter 3.44.8 (Android 폰 에뮬레이터 API 36에서 확인) |
-| 서버 | Java 21 · Spring Boot 4.1 · H2(로컬) / PostgreSQL(AWS) |
-
-차량 앱의 `applicationId`와 코드 패키지는 모두 `com.example.tokcar`입니다.
-
 ## 서버가 필요합니다 (더미 모드 없음)
 
 차량 앱과 폰 앱은 **가족 서버(`server/`)에 연결돼야 동작**합니다(서버가 꺼져 있으면 로그인할 수 없음). 앱은 기본으로 `http://10.0.2.2:8080`을 봅니다. 에뮬레이터의 `10.0.2.2`는 에뮬레이터를 돌리는 PC이므로, **같은 PC에서 서버를 켜면** 따로 설정할 것이 없습니다.
@@ -99,6 +65,40 @@ adb shell am start --user 10 -n com.example.tokcar/.TokCarActivity
 4. 시연 순서: 폰(민지)에서 메시지 보내기 → 차 앱에서 `[안내]` → 15초 뒤 폰에 경로 공유 카드 → `[지도 보기]`.
 
 `adb`는 Android SDK의 `platform-tools` 폴더에 있고 Windows · macOS · Linux에서 명령이 같습니다(`adb`가 PATH에 없으면 전체 경로로 실행). 에뮬레이터가 둘 이상 켜져 있으면 `adb devices`로 기기 ID를 확인해 `adb -s <기기ID> ...`처럼 지정합니다. 네이버 키가 없어도 서버와 앱은 뜹니다(주소 변환 · 경로 · 장소 검색만 꺼짐, 아래 「네이버 키」).
+
+## 이 저장소에 있는 것
+
+| 폴더 | 내용 |
+|---|---|
+| `tokcar/` | **차량용 앱** (Kotlin · Jetpack Compose). 공모전 제출 대상 |
+| `phone-app/` | 가족용 **폰 앱** (Flutter). 차량 앱과 같은 화면 · 메시지, 경로 공유는 지도로 보기 |
+| `server/` | 두 앱이 같이 쓰는 **가족 서버** (Java 21 · Spring Boot · 순수 WebSocket). **앱은 이 서버가 있어야 동작** |
+| `apk/` | 실행 가능한 release APK ([`TokCar_TokCar_release.apk`](apk/TokCar_TokCar_release.apk), 서버가 켜져 있어야 로그인됨) |
+| `start_demo.sh` | 차량 앱 설치 · 실행 + 서버 시작을 한 번에 (Linux · macOS) |
+
+## 주요 기능
+
+- **가족 대화**: 방마다 대화 · 현재 위치 · 경로 공유 카드. 안 읽은 사람 수 표시, 새 메시지는 음성으로 읽어 줌.
+- **방마다 최근 목적지**: 방 목록 카드의 `[안내]` 한 번이면 그 방의 최근 목적지로 길안내를 시작(실제 Pleos 내비에 경로 요청).
+- **15초 공유 대기**: 안내를 시작해도 공유는 바로 시작되지 않고 15초 동안 취소할 수 있음(운전 중 실수 방지).
+- **실시간 경로 공유**: 가족에게 출발 · 도착 주소, 남은 시간 · 도착 예정 시각, 정체 구간(막대)이 계속 갱신됨. 도착하면 카드가 「도착」으로 바뀌고 공유가 끝남.
+- **경유지 · 목적지 변경**: 안내 중 경유지를 넣어도 공유가 끊기지 않음. 내비에서 직접 목적지를 바꿔도 앱이 따라감.
+- **가족 폰 앱**: 위치 보내기는 핀을 옮겨 고르는 화면(장소 검색 포함). 경로 공유 카드의 `[지도 보기]`로 차가 움직이는 모습을 봄.
+
+## 테스트 환경
+
+| 항목 | 값 |
+|---|---|
+| 에뮬레이터 | **Pleos Connect v2.1.0** (AVD 이름 `Pleos_Connect_v2.1.0`, 에뮬레이터 37.2.13.0) |
+| Android | 14 (API 34) |
+| 화면 | **2560 × 1440** |
+| 설치 사용자 | `10` (Pleos 에뮬레이터는 화면이 사용자 10으로 돌아서 `adb install`에 `--user 10`을 붙입니다) |
+| Pleos SDK | Vehicle 2.3.2 · NaviHelper 3.0.5 · FusedLocation 1.1.3 · SpeechToText 3.3.1 · TextToSpeech 3.3.1 |
+| 빌드 | Android Gradle Plugin 9.4.1 · Gradle 9.6.0 · Kotlin 2.2.10 · JDK 21 · compileSdk 37 · minSdk 28 |
+| 폰 앱 | Flutter 3.44.8 (Android 폰 에뮬레이터 API 36에서 확인) |
+| 서버 | Java 21 · Spring Boot 4.1 · H2(로컬) / PostgreSQL(AWS) |
+
+차량 앱의 `applicationId`와 코드 패키지는 모두 `com.example.tokcar`입니다.
 
 ## 개발용 설정 (에뮬레이터에서 시연하기 위한 것)
 
