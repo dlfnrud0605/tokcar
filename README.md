@@ -20,7 +20,7 @@
 | `tokcar/` | **차량용 앱** (Kotlin · Jetpack Compose). 공모전 제출 대상 |
 | `phone-app/` | 가족용 **폰 앱** (Flutter). 차량 앱과 같은 화면 · 메시지, 경로 공유는 지도로 보기 |
 | `server/` | 두 앱이 같이 쓰는 **가족 서버** (Java 21 · Spring Boot · 순수 WebSocket). **앱은 이 서버가 있어야 동작** |
-| `apk/` | 실행 가능한 release APK (`tokcar_TokCar_release.apk`, 서버가 켜져 있어야 로그인됨) |
+| `apk/` | 실행 가능한 release APK (`TokCar_TokCar_release.apk`, 서버가 켜져 있어야 로그인됨) |
 | `start_demo.sh` | 차량 앱 설치 · 실행 + 서버 시작을 한 번에 (Linux · macOS) |
 
 ## 주요 기능
@@ -85,7 +85,7 @@ adb install -r --user 10 tokcar\build\outputs\apk\debug\tokcar-debug.apk
 adb shell am start --user 10 -n com.example.tokcar/.TokCarActivity
 ```
 
-   미리 빌드한 APK(`apk/tokcar_TokCar_release.apk`, release · 서명됨)를 쓰려면 `tokcar/build/...` 자리에 그 경로를 넣어 같은 명령으로 설치합니다. 서버 주소가 `10.0.2.2:8080`이 아니면 `local.properties`의 `tokcar.server`로 정해 다시 빌드합니다.
+   미리 빌드한 APK(`apk/TokCar_TokCar_release.apk`, release · 서명됨)를 쓰려면 `tokcar/build/...` 자리에 그 경로를 넣어 같은 명령으로 설치합니다. 서버 주소가 `10.0.2.2:8080`이 아니면 `local.properties`의 `tokcar.server`로 정해 다시 빌드합니다.
 3. 폰 앱: `cd phone-app && flutter run -d <기기ID> --dart-define-from-file=env.json` (서버 주소를 바꾸려면 `--dart-define=TOKCAR_SERVER=...`. 실제 폰은 `adb reverse tcp:8080 tcp:8080` 후 `http://localhost:8080`).
 4. 시연 순서: 폰(민지)에서 메시지 보내기 → 차 앱에서 `[안내]` → 15초 뒤 폰에 경로 공유 카드 → `[지도 보기]`.
 
