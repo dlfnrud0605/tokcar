@@ -13,6 +13,15 @@
 
 **[▶ 홍보용 쇼츠 (YouTube)](https://youtube.com/shorts/IoLM8zKRTpA)**
 
+## APK 다운로드
+
+**[apk/TokCar_TokCar_release.apk](apk/TokCar_TokCar_release.apk)** (약 42MB, release · 서명됨. 서버가 켜져 있어야 로그인됩니다)
+
+```bash
+adb install -r --user 10 apk/TokCar_TokCar_release.apk
+adb shell am start --user 10 -n com.example.tokcar/.TokCarActivity
+```
+
 ## 이 저장소에 있는 것
 
 | 폴더 | 내용 |
@@ -20,7 +29,7 @@
 | `tokcar/` | **차량용 앱** (Kotlin · Jetpack Compose). 공모전 제출 대상 |
 | `phone-app/` | 가족용 **폰 앱** (Flutter). 차량 앱과 같은 화면 · 메시지, 경로 공유는 지도로 보기 |
 | `server/` | 두 앱이 같이 쓰는 **가족 서버** (Java 21 · Spring Boot · 순수 WebSocket). **앱은 이 서버가 있어야 동작** |
-| `apk/` | 실행 가능한 release APK (`TokCar_TokCar_release.apk`, 서버가 켜져 있어야 로그인됨) |
+| `apk/` | 실행 가능한 release APK ([`TokCar_TokCar_release.apk`](apk/TokCar_TokCar_release.apk), 서버가 켜져 있어야 로그인됨) |
 | `start_demo.sh` | 차량 앱 설치 · 실행 + 서버 시작을 한 번에 (Linux · macOS) |
 
 ## 주요 기능
