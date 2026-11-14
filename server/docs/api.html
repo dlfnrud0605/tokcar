@@ -1,0 +1,409 @@
+<title>TokCar 서버 API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 레이아웃: 왼쪽 고정 목차 + 본문 한 단(폭 좁으면 목차가 위로). TokCar 앱의 남색·경로 초록 */
+:root{
+  --bg:#F5F7FB; --surface:#FFFFFF; --ink:#18213A; --sub:#58637D; --line:#DCE2EE;
+  --accent:#0E8F6E; --accent-soft:#E2F5EE; --navy:#2A5FE0; --navy-soft:#E6EDFC;
+  --muted-soft:#ECEEF3; --warn:#B4541A; --warn-soft:#FCEBDD; --code-bg:#EEF1F7; --on-tag:#FFFFFF;
+  --display:"IBM Plex Sans KR","Noto Sans KR",system-ui,sans-serif;
+  --body:"Noto Sans KR",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1424; --surface:#171E33; --ink:#E7ECF7; --sub:#9AA6C2; --line:#2A3452;
+  --accent:#2BD4A0; --accent-soft:#123B33; --navy:#7FA4FF; --navy-soft:#1C2A52;
+  --muted-soft:#222A40; --warn:#F2A26B; --warn-soft:#3A2618; --code-bg:#11182B; --on-tag:#0F1424; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1424; --surface:#171E33; --ink:#E7ECF7; --sub:#9AA6C2; --line:#2A3452;
+  --accent:#2BD4A0; --accent-soft:#123B33; --navy:#7FA4FF; --navy-soft:#1C2A52;
+  --muted-soft:#222A40; --warn:#F2A26B; --warn-soft:#3A2618; --code-bg:#11182B; --on-tag:#0F1424; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.7 var(--body);padding-inline:16px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;padding-block:40px 80px}
+nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:13px}
+nav .brand{font:700 13px var(--display);letter-spacing:.08em;color:var(--accent);text-transform:uppercase;margin-bottom:12px}
+nav ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav a{display:block;padding:5px 10px;border-radius:6px;color:var(--sub);text-decoration:none}
+nav a:hover,nav a:focus-visible{background:var(--surface);color:var(--ink);outline:none}
+main{min-width:0}
+header h1{font:700 clamp(28px,4vw,38px)/1.25 var(--display);margin:0 0 8px;text-wrap:balance}
+.ver{display:inline-block;font:600 12px var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px;margin-bottom:12px}
+.lead{color:var(--sub);max-width:68ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+.fact b{display:block;font-size:11px;letter-spacing:.06em;color:var(--sub);font-weight:500}
+section{margin-top:56px;scroll-margin-top:24px}
+h2{font:700 22px/1.3 var(--display);margin:0 0 16px;padding-bottom:10px;border-bottom:2px solid var(--ink);text-wrap:balance}
+h2 .n{color:var(--accent);margin-right:8px;font-family:var(--mono)}
+h3{font:700 16px/1.4 var(--display);margin:32px 0 10px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+p,li{max-width:70ch}
+ul{padding-left:20px}
+code{font:13px var(--mono);background:var(--code-bg);padding:1px 5px;border-radius:4px}
+pre{font:12.5px/1.6 var(--mono);background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0}
+pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--surface);border:1px solid var(--line)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:700;font-size:12px;letter-spacing:.04em;color:var(--sub);background:var(--code-bg)}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+.ep{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:28px 0 8px}
+.m{font:600 12px var(--mono);padding:3px 8px;border-radius:4px;color:var(--on-tag)}
+.m.post{background:var(--accent)} .m.get{background:var(--navy)}
+.ep .path{font:600 15px var(--mono)}
+.dir{display:inline-block;font:600 11px var(--mono);padding:2px 7px;border-radius:4px}
+.dir.up{background:var(--accent-soft);color:var(--accent)} .dir.down{background:var(--navy-soft);color:var(--navy)}
+.tag{font:600 11px var(--mono);padding:2px 8px;border-radius:4px;white-space:nowrap}
+.db{background:var(--accent-soft);color:var(--accent)} .mem{background:var(--warn-soft);color:var(--warn)}
+.note{background:var(--warn-soft);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:14px}
+.note b{color:var(--warn)}
+.rule{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 16px;margin:12px 0}
+.rule li{margin:8px 0}
+.lvl{display:inline-flex;gap:4px;vertical-align:middle}
+.lvl i{width:22px;height:8px;border-radius:2px;display:inline-block}
+.q{counter-reset:q;list-style:none;padding:0}
+.q li{counter-increment:q;position:relative;padding:12px 16px 12px 48px;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin:8px 0;max-width:none}
+.q li::before{content:counter(q);position:absolute;left:16px;top:12px;font:700 15px var(--mono);color:var(--accent)}
+@media (max-width:820px){
+  .wrap{grid-template-columns:minmax(0,1fr);gap:24px;padding-block:24px 64px}
+  nav{position:static}
+  nav ol{display:flex;flex-wrap:wrap;gap:4px}
+  nav a{background:var(--surface);border:1px solid var(--line)}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<div class="wrap">
+<nav aria-label="목차">
+  <div class="brand">TokCar · API</div>
+  <ol>
+    <li><a href="#common">1. 공통</a></li>
+    <li><a href="#objects">2. 객체</a></li>
+    <li><a href="#rest">3. REST</a></li>
+    <li><a href="#ws">4. WebSocket</a></li>
+    <li><a href="#flow">5. 흐름</a></li>
+    <li><a href="#accounts">6. 가계정</a></li>
+    <li><a href="#later">7. 2단계 예정</a></li>
+    <li><a href="#open">8. 구현 메모</a></li>
+  </ol>
+</nav>
+
+<main>
+<header>
+  <span class="ver">v1.4 · 방 만들기 · 초대 · 나가기 추가</span>
+  <h1>TokCar 가족 서버 API 명세</h1>
+  <p class="lead">차량 앱(Kotlin)과 폰 앱(Flutter)이 같이 쓰는 형식. 1단계 범위는 가계정 2개로 로그인하고, 친구 목록을 보고, 방 하나에서 대화 · 현재 위치 · 경로 공유 · 「이 방에서 간 곳」을 주고받는 데까지.</p>
+  <div class="facts">
+    <div class="fact"><b>조회 · 기록</b>REST</div>
+    <div class="fact"><b>보내기 · 실시간</b>순수 WebSocket + JSON</div>
+    <div class="fact"><b>서버</b>Java 21 · Spring Boot 4</div>
+    <div class="fact"><b>저장</b>DB(H2 → RDS) + 서버 메모리</div>
+  </div>
+</header>
+
+<section id="common">
+<h2><span class="n">1</span>공통</h2>
+<div class="tbl"><table>
+<tr><th>항목</th><th>값</th></tr>
+<tr><td>주소(로컬)</td><td><code>http://&lt;PC IP&gt;:8080</code> · 에뮬레이터는 <code>http://10.0.2.2:8080</code> · USB 폰은 <code>adb reverse tcp:8080 tcp:8080</code> 후 <code>http://localhost:8080</code></td></tr>
+<tr><td>형식</td><td>JSON, UTF-8. 칸 이름은 camelCase, 종류 값은 대문자(<code>TEXT</code>, <code>ACTIVE</code>)로 DB와 같게</td></tr>
+<tr><td>id</td><td>사용자 · 방 · 메시지 · 장소 모두 숫자. 로그인 아이디는 id로 안 씀</td></tr>
+<tr><td>시각</td><td>ISO-8601 UTC (<code>2026-11-13T09:30:00Z</code>). 「오후 6:30」 표기는 앱이 만든다</td></tr>
+<tr><td>인증</td><td>로그인으로 받은 토큰을 <code>Authorization: Bearer &lt;token&gt;</code> 헤더로 (REST · WebSocket 모두). 1단계 토큰은 서버 메모리에만 있어 서버를 다시 켜면 다시 로그인</td></tr>
+<tr><td>권한</td><td>방에 관한 요청은 모두 「내가 그 방 멤버인가」를 확인. 아니면 <code>NOT_MEMBER</code></td></tr>
+</table></div>
+
+<h3>오류 (REST)</h3>
+<pre><code>{ "error": { "code": "BAD_CREDENTIALS", "message": "아이디 또는 비밀번호가 맞지 않아요", "left": 3 } }</code></pre>
+<div class="tbl"><table>
+<tr><th>HTTP</th><th>code</th><th>뜻</th></tr>
+<tr><td>400</td><td><code>BAD_REQUEST</code></td><td>값 모양이 틀림(빠진 칸, 범위 밖 좌표 등)</td></tr>
+<tr><td>401</td><td><code>UNAUTHORIZED</code></td><td>토큰이 없거나 모르는 토큰</td></tr>
+<tr><td>401</td><td><code>BAD_CREDENTIALS</code></td><td>아이디 · 비밀번호 틀림 (<code>left</code> = 남은 시도)</td></tr>
+<tr><td>403</td><td><code>NOT_MEMBER</code></td><td>내가 속하지 않은 방</td></tr>
+<tr><td>404</td><td><code>NOT_FOUND</code></td><td>없는 방 · 메시지</td></tr>
+<tr><td>400</td><td><code>NOT_FRIEND</code></td><td>방 만들기 · 초대에 내 친구가 아닌 사람이 있음</td></tr>
+<tr><td>405</td><td><code>METHOD_NOT_ALLOWED</code></td><td>주소는 맞는데 GET · POST · DELETE 가 틀림</td></tr>
+<tr><td>409</td><td><code>ALREADY_MEMBER</code></td><td>이미 방에 있는 사람을 초대함</td></tr>
+<tr><td>423</td><td><code>LOCKED</code></td><td>연속 5번 틀려 잠김(<code>users.failed_logins</code>)</td></tr>
+</table></div>
+</section>
+
+<section id="objects">
+<h2><span class="n">2</span>객체</h2>
+
+<h3>User <span class="tag db">users</span></h3>
+<pre><code>{ "id": 1, "name": "아빠", "profileImageUrl": null }</code></pre>
+<p><code>profileImageUrl</code>은 서버가 <code>profile_image_key</code>로 만든 주소. 사진이 없으면 <code>null</code> → 앱이 기본 그림. 로그인 아이디와 전화번호는 남에게 보내지 않는다.</p>
+
+<h3>Friend <span class="tag db">friendships</span> <span class="tag db">users</span></h3>
+<pre><code>{ "id": 2, "name": "민지", "profileImageUrl": null, "statusMsg": "시험 기간 📚" }</code></pre>
+<p>친구 목록 한 줄. User에 상태 메시지만 더한 모양. 전화번호는 보내지 않는다(친구 추가 때 내가 입력한 번호만 앱이 안다).</p>
+
+<h3>Place</h3>
+<pre><code>{ "name": "민지 학원", "addr": "성남시 분당구 정자일로 95", "lat": 37.3671, "lon": 127.1086 }</code></pre>
+<p>현재 위치 · 출발 · 목적지 · 「이 방에서 간 곳」이 모두 이 모양. 출발은 <code>name</code>이 빈 글일 수 있다.</p>
+
+<h3>Message <span class="tag db">messages</span></h3>
+<pre><code>{
+  "id": 1024,
+  "roomId": 1,
+  "senderId": 1,
+  "kind": "ROUTE",
+  "createdAt": "2026-11-13T09:12:00Z",
+  "text": null,
+  "location": null,
+  "route": { … }
+}</code></pre>
+<div class="tbl"><table>
+<tr><th>kind</th><th>채워지는 칸</th><th>화면</th></tr>
+<tr><td><code>TEXT</code></td><td><code>text</code></td><td>말풍선</td></tr>
+<tr><td><code>LOCATION</code></td><td><code>location</code>(Place) — <span class="tag db">message_locations</span></td><td>「현재 위치」 카드. 보낸 지 1년이 지나 지워졌으면 <code>null</code> → 「위치를 보냈어요」</td></tr>
+<tr><td><code>ROUTE</code></td><td><code>route</code> — <span class="tag db">route_shares</span> + <span class="tag mem">메모리</span></td><td>「경로 공유」 카드. 새 메시지를 더 만들지 않고 이 카드가 바뀐다</td></tr>
+<tr><td><code>SYSTEM</code></td><td><code>text</code>, <code>senderId</code> = null</td><td>가운데 안내 글(「민지 님을 초대했어요」). 서버가 만들어 저장. 2단계 방 만들기 · 초대부터</td></tr>
+</table></div>
+<p>보낸 사람 이름 · 사진은 방의 <code>members</code>에서 <code>senderId</code>로 찾는다(메시지마다 반복해서 보내지 않음).</p>
+
+<h3>Route <span class="tag db">route_shares</span> <span class="tag mem">live = 메모리</span></h3>
+<pre><code>{
+  "state": "ACTIVE",
+  "from": { "name": "", "addr": "성남시 분당구 서현로 210", "lat": 37.3836, "lon": 127.1232 },
+  "dest": { "name": "민지 학원", "addr": "성남시 분당구 정자일로 95", "lat": 37.3671, "lon": 127.1086 },
+  "endedAt": null,
+  "live": {
+    "carLat": 37.3789, "carLon": 127.1123,
+    "remainSec": 1080, "pct": 58,
+    "etaAt": "2026-11-13T09:30:00Z",
+    "traffic": [[0, 0.22, "FAST"], [0.22, 0.34, "MODERATE"], [0.34, 1, "FAST"]],
+    "updatedAt": "2026-11-13T09:12:05Z"
+  }
+}</code></pre>
+<div class="tbl"><table>
+<tr><th>칸</th><th>어디서</th><th>뜻</th></tr>
+<tr><td><code>state</code></td><td>DB</td><td><code>ACTIVE</code>(가는 중) · <code>ARRIVED</code>(도착) · <code>STOPPED</code>(공유 멈춤)</td></tr>
+<tr><td><code>from</code> · <code>dest</code></td><td>DB</td><td>출발 · 목적지. 목적지를 바꾸면 <code>dest</code>를 덮어씀. 시작 시각은 메시지의 <code>createdAt</code></td></tr>
+<tr><td><code>endedAt</code></td><td>DB</td><td>도착 · 멈춘 시각. 진행 중이면 <code>null</code></td></tr>
+<tr><td><code>live</code></td><td>메모리</td><td>마지막으로 받은 실시간 값. <code>ACTIVE</code>가 아니거나 서버를 다시 켠 뒤 아직 못 받았으면 <code>null</code>. DB에 저장하지 않음</td></tr>
+<tr><td><code>live.traffic</code></td><td>메모리</td><td>정체 구간 <code>[from, to, level]</code>(경로 전체 0~1). level
+  <span class="lvl" aria-hidden="true"><i style="background:#4DA3FF"></i><i style="background:#F2C94C"></i><i style="background:#F2994A"></i><i style="background:#EB5757"></i></span>
+  <code>FAST</code> · <code>MODERATE</code> · <code>SLOW</code> · <code>HEAVY</code>. <code>null</code> = 정보 없음, <code>[]</code> = 정체 없음</td></tr>
+<tr><td><code>live.updatedAt</code></td><td>메모리</td><td>60초 넘게 안 바뀌면 앱이 「신호 끊김」을 보일 수 있게</td></tr>
+</table></div>
+<div class="note"><b>경로선은 API에 없음.</b> 지도 보기를 연 폰이 <code>live.carLat/carLon</code>(없으면 <code>from</code>) → <code>dest</code>로 네이버 Directions를 직접 부른다. 네이버 Maps 약관 제7조 ⑨⑪(결과 저장 · 재사용 · 제3자 제공 금지).</div>
+
+<h3>Room <span class="tag db">rooms</span> <span class="tag db">room_members</span></h3>
+<pre><code>{
+  "id": 1,
+  "name": "우리 가족",
+  "members": [{ "id": 1, "name": "아빠", "profileImageUrl": null },
+              { "id": 2, "name": "민지", "profileImageUrl": null }],
+  "readUpTo": [{ "userId": 1, "msgId": 1024 }, { "userId": 2, "msgId": 1019 }],
+  "lastMessage": { …Message… },
+  "unread": 2
+}</code></pre>
+<ul>
+  <li><code>members</code>: 나도 포함.</li>
+  <li><code>readUpTo</code>: <code>room_members.last_read_msg_id</code>. 내가 보낸 메시지 옆 「안 읽은 사람 수」 = 나를 뺀 멤버 중 이 값이 그 메시지 id보다 작은 사람 수.</li>
+  <li><code>unread</code>: 내 <code>last_read_msg_id</code>보다 큰, 남이 보낸 메시지 수.</li>
+</ul>
+
+<h3>RoomPlace <span class="tag db">room_places</span></h3>
+<pre><code>{ "id": 31, "name": "안성시 일죽면", "addr": "안성시 일죽면 판교길 58", "lat": 37.0912, "lon": 127.4815 }</code></pre>
+<p>「이 방에서 간 곳」 한 줄. 방마다 최대 3개, 최신순.</p>
+</section>
+
+<section id="rest">
+<h2><span class="n">3</span>REST</h2>
+
+<h3>로그인</h3>
+<div class="ep"><span class="m post">POST</span><span class="path">/api/auth/login</span></div>
+<pre><code>요청 { "loginId": "papa", "password": "…" }
+응답 200 { "token": "…", "me": { "id": 1, "loginId": "papa", "name": "아빠", "profileImageUrl": null } }</code></pre>
+<ul>
+  <li>틀리면 <code>401 BAD_CREDENTIALS</code>(<code>left</code> 포함), 5번째에 <code>423 LOCKED</code>. 맞으면 실패 횟수 0으로. 없는 아이디는 <code>left</code> 없이 <code>BAD_CREDENTIALS</code>만.</li>
+  <li>1단계에는 잠김을 푸는 화면이 없어서, <code>local</code> 프로필은 서버를 켤 때 가계정의 실패 횟수를 0으로 되돌린다.</li>
+</ul>
+
+<div class="ep"><span class="m post">POST</span><span class="path">/api/auth/logout</span></div>
+<p>토큰을 버린다. 그 토큰으로 열린 WebSocket도 닫는다. 응답 <code>204</code>.</p>
+
+<div class="ep"><span class="m get">GET</span><span class="path">/api/me</span></div>
+<p>응답 <code>200</code> 로그인 응답의 <code>me</code>와 같은 모양.</p>
+
+<h3>친구</h3>
+<div class="ep"><span class="m get">GET</span><span class="path">/api/friends</span></div>
+<p>내 친구 목록(<code>friendships.user_id = 나</code>). 응답 <code>200 [Friend]</code>, 이름 가나다순. 1단계는 가계정 둘이 서로 친구로 미리 들어 있다. 친구 찾기 · 추가는 2단계.</p>
+
+<h3>방 · 메시지</h3>
+<div class="ep"><span class="m get">GET</span><span class="path">/api/rooms</span></div>
+<p>내가 속한 방 목록. 응답 <code>200 [Room]</code>, 최근 대화 순(<code>rooms.last_msg_id</code> 큰 순).</p>
+
+<div class="ep"><span class="m get">GET</span><span class="path">/api/rooms/{roomId}/messages</span></div>
+<div class="tbl"><table>
+<tr><th>쿼리</th><th>뜻</th></tr>
+<tr><td>(없음)</td><td>최신 50개</td></tr>
+<tr><td><code>before={id}&amp;limit=50</code></td><td>그보다 이전 것(위로 스크롤). limit 최대 100</td></tr>
+<tr><td><code>after={id}</code></td><td>그보다 이후 것 전부(다시 연결했을 때 빠진 것 채우기). 최대 500, 넘으면 <code>hasMore: true</code></td></tr>
+</table></div>
+<p>응답 <code>200 { "messages": [Message, …], "hasMore": false }</code> (오래된 것 → 새것 순). 경로 공유 카드는 지금 상태로, 진행 중이면 <code>route.live</code>까지 채워서 준다.</p>
+
+<h3>방 만들기 · 초대 · 나가기</h3>
+<div class="ep"><span class="m post">POST</span><span class="path">/api/rooms</span></div>
+<pre><code>요청 { "name": "", "memberIds": [2, 3] }
+응답 201 Room   ← 만든 방(내가 보는 모양)</code></pre>
+<ul>
+  <li>나 + 고른 친구로 방을 만든다. <code>memberIds</code> 는 1명 이상, 모두 <b>내 친구</b>여야 한다(아니면 <code>NOT_FRIEND</code>). 한 방 최대 50명.</li>
+  <li><code>name</code> 이 비면 친구 이름을 이어 붙인다(「민지, 엄마」, 30자까지).</li>
+  <li>서버가 안내 글(SYSTEM)을 남긴다: 「아빠가 방을 만들었어요 · 민지, 엄마 초대」.</li>
+</ul>
+
+<div class="ep"><span class="m post">POST</span><span class="path">/api/rooms/{roomId}/members</span></div>
+<pre><code>요청 { "userIds": [5] }
+응답 200 Room   ← 바뀐 방</code></pre>
+<ul>
+  <li>방 멤버가 자기 친구 중 방에 없는 사람을 넣는다(멤버가 아니면 <code>NOT_MEMBER</code>, 이미 있으면 <code>ALREADY_MEMBER</code>).</li>
+  <li>안내 글: 「민지가 엄마를 초대했어요」.</li>
+  <li>새로 들어온 사람도 들어오기 전 대화를 볼 수 있다(카카오톡은 안 보임 — 바꿀지 정해야 함, 8절).</li>
+</ul>
+
+<div class="ep"><span class="m post" style="background:var(--warn)">DELETE</span><span class="path">/api/rooms/{roomId}/members/me</span></div>
+<p>나가기. 응답 <code>204</code>. 그 방에 내 경로 공유가 진행 중이면 <code>STOPPED</code>로 끝내고, 안내 글 「아빠가 나갔어요」를 남긴다. 남은 사람이 없어도 방 기록은 지우지 않는다.</p>
+
+<h3>이 방에서 간 곳</h3>
+<div class="ep"><span class="m get">GET</span><span class="path">/api/rooms/{roomId}/places</span></div>
+<p>응답 <code>200 [RoomPlace]</code>, 최신순 최대 3개.</p>
+
+<div class="ep"><span class="m post">POST</span><span class="path">/api/rooms/{roomId}/places</span></div>
+<pre><code>요청 Place
+응답 200 [RoomPlace]   ← 반영된 뒤의 목록(최신순 최대 3개)</code></pre>
+<p>차량 앱이 이 방에서 <b>경로 안내를 시작할 때</b> 부른다(공유를 하든 안 하든). 같은 곳(방 + 이름 + 주소)이 있으면 지우고 다시 넣어 맨 위로, 4개째면 가장 오래된 것을 지운다. 경로 공유(<code>route.start</code>)는 이 목록을 건드리지 않는다.</p>
+</section>
+
+<section id="ws">
+<h2><span class="n">4</span>WebSocket</h2>
+
+<h3>연결</h3>
+<p><code>GET /ws</code> (헤더 <code>Authorization: Bearer &lt;token&gt;</code>). 토큰이 틀리면 연결을 받지 않는다(HTTP 401).</p>
+<ul>
+  <li>한 사람이 여러 기기(차 + 폰)로 동시에 붙을 수 있다. 서버는 그 사람의 모든 연결에 보낸다.</li>
+  <li>앱은 25초마다 WebSocket ping. 서버는 60초 동안 아무것도 안 오면 연결을 닫는다.</li>
+  <li>끊기면 1 → 2 → 4 → … 최대 30초 간격으로 다시 붙고, 붙은 뒤 방마다 <code>GET messages?after=&lt;마지막 id&gt;</code>로 빠진 것을 채운다.</li>
+  <li>차량 앱은 푸시(FCM)를 못 받을 수 있어(구글 서비스 없음) 실시간은 이 연결로만 받는다.</li>
+</ul>
+
+<h3>프레임</h3>
+<pre><code>{ "type": "text.send", "ref": "c-17", … }</code></pre>
+<ul>
+  <li><code>type</code>: 무슨 일인지.</li>
+  <li><code>ref</code>: 앱이 정하는 임시 번호. 서버가 <code>ack</code> · <code>error</code>에 그대로 돌려줘서 「보내는 중」 말풍선을 진짜 메시지로 바꾼다. 응답이 필요 없는 프레임은 생략.</li>
+</ul>
+
+<h3><span class="dir up">앱 → 서버</span></h3>
+<div class="tbl"><table>
+<tr><th>type</th><th>내용</th><th>서버가 하는 일</th></tr>
+<tr><td><code>text.send</code></td><td><code>roomId</code>, <code>text</code>(1~1000자)</td><td>DB 저장 → 보낸 연결에 <code>ack</code>, 방 전원에게 <code>message.new</code></td></tr>
+<tr><td><code>location.send</code></td><td><code>roomId</code>, <code>location</code>(Place)</td><td>DB 저장 → <code>ack</code> + <code>message.new</code></td></tr>
+<tr><td><code>route.start</code></td><td><code>roomId</code>, <code>from</code>, <code>dest</code>, <code>live</code>?</td><td>DB 저장(state = ACTIVE) + live 메모리 → <code>ack</code> + <code>message.new</code></td></tr>
+<tr><td><code>route.live</code></td><td><code>roomId</code>, <code>carLat</code>, <code>carLon</code>, <code>remainSec</code>, <code>pct</code>, <code>etaAt</code>, <code>traffic</code>?</td><td>메모리만 덮어씀 → 방 전원에게 <code>route.live</code>. DB 안 건드림</td></tr>
+<tr><td><code>route.dest</code></td><td><code>roomId</code>, <code>dest</code></td><td>DB의 목적지 덮어씀 → <code>message.updated</code></td></tr>
+<tr><td><code>route.end</code></td><td><code>roomId</code>, <code>reason</code>(<code>ARRIVED</code> · <code>STOPPED</code>)</td><td>DB state · endedAt 기록, live 지움 → <code>message.updated</code></td></tr>
+<tr><td><code>read</code></td><td><code>roomId</code>, <code>msgId</code></td><td>지금 값보다 클 때만 <code>last_read_msg_id</code> 갱신 → 방 전원에게 <code>read</code></td></tr>
+</table></div>
+
+<div class="rule"><ul>
+  <li>한 사람은 한 방에 <b>진행 중(ACTIVE) 경로 공유를 하나만</b> 가진다. 있는데 <code>route.start</code>를 보내면 <code>error ROUTE_ACTIVE</code>. <code>route.live</code> · <code>route.dest</code> · <code>route.end</code>는 「이 방의 내 진행 중 공유」에 적용되고, 없으면 <code>error NO_ACTIVE_ROUTE</code>.</li>
+  <li><code>route.live</code>는 같은 공유에 <b>2초에 한 번</b>까지만 반영(더 자주 오면 마지막 것만). 차량 앱은 지금처럼 5초마다 보내면 된다.</li>
+  <li>DB에 쓰는 일은 시작 · 목적지 변경 · 끝, 세 번뿐. 차 위치는 디스크에 남지 않는다.</li>
+</ul></div>
+
+<pre><code>{ "type": "route.start", "ref": "c-18", "roomId": 1,
+  "from": { "name": "", "addr": "성남시 분당구 서현로 210", "lat": 37.3836, "lon": 127.1232 },
+  "dest": { "name": "민지 학원", "addr": "성남시 분당구 정자일로 95", "lat": 37.3671, "lon": 127.1086 },
+  "live": { "carLat": 37.3836, "carLon": 127.1232, "remainSec": 1080, "pct": 0,
+            "etaAt": "2026-11-13T09:30:00Z", "traffic": null } }
+
+{ "type": "route.live", "roomId": 1, "carLat": 37.3770, "carLon": 127.1119,
+  "remainSec": 1020, "pct": 6, "etaAt": "2026-11-13T09:30:00Z",
+  "traffic": [[0, 0.4, "FAST"], [0.4, 0.55, "SLOW"], [0.55, 1, "FAST"]] }</code></pre>
+
+<h3><span class="dir down">서버 → 앱</span></h3>
+<div class="tbl"><table>
+<tr><th>type</th><th>내용</th><th>받는 곳</th></tr>
+<tr><td><code>ack</code></td><td><code>ref</code>, <code>message</code></td><td>보낸 그 연결만</td></tr>
+<tr><td><code>message.new</code></td><td><code>message</code></td><td>방 전원(보낸 사람의 다른 기기 포함, 보낸 연결 제외)</td></tr>
+<tr><td><code>message.updated</code></td><td><code>message</code> — 같은 id 카드를 통째로 바꿈</td><td>방 전원</td></tr>
+<tr><td><code>route.live</code></td><td><code>roomId</code>, <code>messageId</code>, <code>live</code></td><td>방 전원(보낸 차 제외). 카드의 <code>route.live</code>만 바꿈</td></tr>
+<tr><td><code>read</code></td><td><code>roomId</code>, <code>userId</code>, <code>msgId</code></td><td>방 전원</td></tr>
+<tr><td><code>room.updated</code></td><td><code>room</code>(Room, 받는 사람이 보는 모양) — 방이 생겼거나 멤버 · 이름이 바뀜. 모르는 방이면 목록에 넣는다</td><td>방 전원(새로 들어온 사람 포함)</td></tr>
+<tr><td><code>room.removed</code></td><td><code>roomId</code> — 그 방에서 빠짐(나가기)</td><td>나간 사람의 모든 기기</td></tr>
+<tr><td><code>error</code></td><td><code>ref</code>?, <code>code</code>, <code>message</code></td><td>보낸 그 연결만</td></tr>
+</table></div>
+<p>WebSocket <code>error.code</code>: <code>BAD_REQUEST</code>, <code>NOT_MEMBER</code>, <code>NOT_FOUND</code>, <code>ROUTE_ACTIVE</code>, <code>NO_ACTIVE_ROUTE</code>, <code>TOO_LONG</code>.</p>
+<p>방 만들기 · 초대 · 나가기는 REST 로 하고, 그 결과는 WebSocket 으로 <code>room.updated</code> → (끝난 경로 공유 <code>message.updated</code>) → 안내 글 <code>message.new</code> 순서로, 나간 사람에겐 <code>room.removed</code> 가 간다.</p>
+</section>
+
+<section id="flow">
+<h2><span class="n">5</span>흐름: 안내 · 경로 공유</h2>
+<pre class="mermaid">
+sequenceDiagram
+    participant C as 차량 앱 (아빠)
+    participant S as 서버
+    participant P as 폰 앱 (민지)
+    C->>S: POST /rooms/1/places (안내 시작한 곳)
+    S-->>C: 200 [이 방에서 간 곳 3개]
+    C->>S: route.start (from, dest, live)
+    Note over S: DB 저장 ACTIVE + 메모리 live
+    S-->>C: ack (message 1024)
+    S-->>P: message.new (경로 공유 카드)
+    loop 5초마다
+        C->>S: route.live (차 위치, 남은 시간, traffic)
+        Note over S: 메모리만 덮어씀
+        S-->>P: route.live (카드 막대 · 지도 마커)
+    end
+    P->>S: read (msgId 1024)
+    S-->>C: read (userId 2, msgId 1024)
+    Note over P: 지도 보기를 열면 폰이 직접<br/>네이버 Directions (차 위치 → dest)
+    C->>S: route.end (ARRIVED)
+    Note over S: DB state · endedAt, 메모리 live 지움
+    S-->>P: message.updated (도착)
+</pre>
+</section>
+
+<section id="accounts">
+<h2><span class="n">6</span>가계정 (local 프로필 전용)</h2>
+<div class="tbl"><table>
+<tr><th>id</th><th>로그인 아이디</th><th>이름</th><th>쓰는 앱</th></tr>
+<tr><td>1</td><td><code>papa</code></td><td>아빠</td><td>차량 앱</td></tr>
+<tr><td>2</td><td><code>minji</code></td><td>민지</td><td>폰 앱</td></tr>
+</table></div>
+<p>둘은 서로 친구(friendships 두 줄)이고, 방 1(우리 가족)에 둘이 들어 있다. 비밀번호는 <code>src/main/resources/application-local.properties</code>에 있고, <code>local</code> 프로필에서만 만들어진다(AWS에는 안 만들어짐).</p>
+</section>
+
+<section id="later">
+<h2><span class="n">7</span>2단계 예정 (이름만)</h2>
+<div class="tbl"><table>
+<tr><th>기능</th><th>API</th><th>ERD</th></tr>
+<tr><td>가입 · 문자 인증</td><td><code>POST /api/auth/phone/code</code>, <code>…/verify</code>, <code>POST /api/auth/signup</code></td><td>users, phone_verifications</td></tr>
+<tr><td>아이디 찾기 · 비밀번호 재설정</td><td><code>POST /api/auth/find-id</code>(번호당 하나), <code>POST /api/auth/reset-password</code></td><td>users, phone_verifications</td></tr>
+<tr><td>로그인 유지</td><td><code>POST /api/auth/refresh</code></td><td>Redis refresh:*</td></tr>
+<tr><td>프로필</td><td><code>PATCH /api/me</code>, <code>PUT /api/me/photo</code></td><td>users.profile_image_key</td></tr>
+<tr><td>친구 찾기 · 추가 · 삭제</td><td><code>POST /api/friends/lookup</code>(번호로 찾기), <code>POST /api/friends</code>, <code>DELETE /api/friends/{id}</code></td><td>friendships</td></tr>
+<tr><td>푸시</td><td><code>PUT /api/devices</code></td><td>devices</td></tr>
+</table></div>
+</section>
+
+<section id="open">
+<h2><span class="n">8</span>구현 메모</h2>
+<ul>
+  <li><code>route.start</code>가 이미 진행 중이면 · 진행 중 공유가 없으면 WebSocket <code>error</code>(<code>ROUTE_ACTIVE</code> · <code>NO_ACTIVE_ROUTE</code>).</li>
+  <li><code>route.live</code>는 받자마자 메모리에 덮어쓰고, 같은 공유는 2초에 한 번만 전달. 그 사이 값은 2초 뒤 마지막 것 하나로.</li>
+  <li>메시지를 보내면 보낸 사람의 <code>last_read_msg_id</code>도 그 메시지로 올라간다(내 메시지는 읽은 것).</li>
+  <li>서버 코드 · 실행 방법: <code>server/README.md</code>.</li>
+  <li><b>정해야 할 것</b>: 초대받은 사람이 들어오기 전 대화를 볼지(지금은 보임). 안 보이게 하려면 <code>room_members</code> 에 「들어온 때의 마지막 메시지 id」를 두고 그 뒤 것만 준다.</li>
+</ul>
+</section>
+</main>
+</div>

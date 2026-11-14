@@ -1,0 +1,359 @@
+{
+  "_note": "서버 대신 쓰는 더미 데이터. 앱의 FakeServer가 읽는다. 이름·장소·좌표는 모두 예시이며 실제 좌표/도로가 아니다. / TokCar: 오래된 방 시각은 요일 대신 월 일(11월 9일). 가입 계정은 FakeServer 코드(papa / papa1234!)에 있음.",
+  "me": {
+    "name": "아빠",
+    "phone": "01012345678",
+    "addr": "성남시 수정구 시흥동 335"
+  },
+  "favs": [
+    "home",
+    "work",
+    "mom"
+  ],
+  "navRecent": [
+    "mart",
+    "stn",
+    "cafe"
+  ],
+  "navResults": [
+    "stn",
+    "mart",
+    "cafe"
+  ],
+  "places": [
+    {
+      "id": "home",
+      "name": "집",
+      "addr": "성남시 수정구 산성대로 501",
+      "lat": 37.456205,
+      "lon": 127.162272
+    },
+    {
+      "id": "work",
+      "name": "회사",
+      "addr": "성남시 분당구 판교로 235",
+      "lat": 37.402,
+      "lon": 127.1086
+    },
+    {
+      "id": "mom",
+      "name": "어머니집",
+      "addr": "경기도 광주시 오포로 215",
+      "lat": 37.355,
+      "lon": 127.229
+    },
+    {
+      "id": "club",
+      "name": "강남 모임 장소",
+      "addr": "서울특별시 강남구 테헤란로 152",
+      "lat": 37.5,
+      "lon": 127.0364
+    },
+    {
+      "id": "mart",
+      "name": "이마트 분당점",
+      "addr": "성남시 분당구 성남대로 331",
+      "lat": 37.3836,
+      "lon": 127.121
+    },
+    {
+      "id": "stn",
+      "name": "판교역",
+      "addr": "성남시 분당구 판교역로 160",
+      "lat": 37.3948,
+      "lon": 127.1112
+    },
+    {
+      "id": "cafe",
+      "name": "스타벅스 판교점",
+      "addr": "성남시 분당구 판교역로 166",
+      "lat": 37.3925,
+      "lon": 127.1105
+    },
+    {
+      "id": "momHere",
+      "name": "엄마 위치",
+      "card": "서현역 앞",
+      "addr": "성남시 분당구 서현로 210",
+      "lat": 37.3846,
+      "lon": 127.1233
+    },
+    {
+      "id": "academy",
+      "name": "민지 학원",
+      "card": "민지 학원",
+      "addr": "성남시 분당구 정자일로 95",
+      "lat": 37.367,
+      "lon": 127.1088
+    }
+  ],
+  "friends": [
+    {
+      "id": "mom1",
+      "tel": "01011110001",
+      "name": "엄마",
+      "ini": "엄",
+      "color": "#c2410c",
+      "status": "오늘도 수고했어요",
+      "place": "home"
+    },
+    {
+      "id": "minji",
+      "tel": "01011110002",
+      "name": "민지",
+      "ini": "민",
+      "color": "#be185d",
+      "status": "치킨 먹고 싶다",
+      "place": "home"
+    },
+    {
+      "id": "mother",
+      "tel": "01011110003",
+      "name": "어머니",
+      "ini": "어",
+      "color": "#0f766e",
+      "status": "",
+      "place": "mom"
+    },
+    {
+      "id": "nuna",
+      "tel": "01011110004",
+      "name": "누나",
+      "ini": "누",
+      "color": "#0e7490",
+      "status": "주말에 갈게",
+      "place": "mom"
+    },
+    {
+      "id": "chul",
+      "tel": "01011110005",
+      "name": "철수",
+      "ini": "철",
+      "color": "#5b3fd0",
+      "status": "7시 모임!",
+      "place": "club"
+    },
+    {
+      "id": "young",
+      "tel": "01011110006",
+      "name": "영호",
+      "ini": "영",
+      "color": "#6d28d9",
+      "status": "",
+      "place": "club"
+    },
+    {
+      "id": "minsuk",
+      "tel": "01011110007",
+      "name": "민석",
+      "ini": "민",
+      "color": "#4338ca",
+      "status": "",
+      "place": "club"
+    },
+    {
+      "id": "jong",
+      "tel": "01011110008",
+      "name": "종민",
+      "ini": "종",
+      "color": "#1d4ed8",
+      "status": "",
+      "place": "club"
+    },
+    {
+      "id": "kim",
+      "tel": "01011110009",
+      "name": "김 팀장",
+      "ini": "김",
+      "color": "#92600a",
+      "status": "외근 중",
+      "place": "work"
+    },
+    {
+      "id": "park",
+      "tel": "01011110010",
+      "name": "박 대리",
+      "ini": "박",
+      "color": "#a16207",
+      "status": "내일 8시 정문 앞",
+      "place": "work"
+    }
+  ],
+  "phonebook": [
+    {
+      "tel": "01022223333",
+      "id": "aunt",
+      "name": "이모",
+      "ini": "이",
+      "color": "#9d174d",
+      "status": ""
+    },
+    {
+      "tel": "01044445555",
+      "id": "uncle",
+      "name": "삼촌",
+      "ini": "삼",
+      "color": "#0369a1",
+      "status": ""
+    }
+  ],
+  "rooms": [
+    {
+      "id": "family",
+      "name": "우리 가족",
+      "place": "home",
+      "color": "#c2410c",
+      "ini": "가",
+      "members": [
+        "엄마",
+        "민지"
+      ],
+      "unread": 2,
+      "last": "엄마: 저녁 먹고 와?",
+      "time": "오후 6:05",
+      "msgs": [
+        [
+          "엄마",
+          "오늘 몇 시쯤 와?"
+        ],
+        [
+          "민지",
+          "아빠 치킨 사와 🍗"
+        ],
+        [
+          "엄마",
+          "저녁 먹고 와?"
+        ]
+      ]
+    },
+    {
+      "id": "mom",
+      "name": "어머니집",
+      "place": "mom",
+      "color": "#0f766e",
+      "ini": "어",
+      "members": [
+        "어머니",
+        "누나"
+      ],
+      "unread": 0,
+      "last": "누나: 이번 주말에 올 수 있어?",
+      "time": "어제",
+      "msgs": [
+        [
+          "누나",
+          "이번 주말에 올 수 있어?"
+        ],
+        [
+          "어머니",
+          "밥 해 놓을게"
+        ]
+      ]
+    },
+    {
+      "id": "club",
+      "name": "동창 모임",
+      "place": "club",
+      "color": "#5b3fd0",
+      "ini": "동",
+      "members": [
+        "철수",
+        "영호",
+        "민석",
+        "종민"
+      ],
+      "unread": 5,
+      "last": "철수: 7시에 시작이야",
+      "time": "오후 4:40",
+      "msgs": [
+        [
+          "철수",
+          "7시에 시작이야"
+        ],
+        [
+          "영호",
+          "나 좀 늦을 듯"
+        ]
+      ]
+    },
+    {
+      "id": "pool",
+      "name": "출근 카풀",
+      "place": "work",
+      "color": "#92600a",
+      "ini": "카",
+      "members": [
+        "김 팀장",
+        "박 대리"
+      ],
+      "unread": 0,
+      "last": "박 대리: 내일 8시 정문 앞",
+      "time": "11월 9일",
+      "msgs": [
+        [
+          "박 대리",
+          "내일 8시 정문 앞"
+        ],
+        [
+          "김 팀장",
+          "확인"
+        ]
+      ]
+    }
+  ],
+  "histories": {
+    "family": [
+      "home",
+      "mart"
+    ],
+    "mom": [
+      "mom",
+      "mart"
+    ],
+    "club": [
+      "club",
+      "stn"
+    ],
+    "pool": [
+      "work",
+      "stn"
+    ]
+  },
+  "incoming": {
+    "here": {
+      "roomId": "family",
+      "who": "엄마",
+      "kind": "here",
+      "place": "momHere"
+    },
+    "dest": {
+      "roomId": "family",
+      "who": "민지",
+      "kind": "dest",
+      "place": "academy",
+      "from": "성남시 분당구 서현로 210",
+      "min": 18,
+      "pct": 58,
+      "eta": "오후 6:30"
+    }
+  },
+  "incomingText": {
+    "text": {
+      "roomId": "family",
+      "who": "엄마",
+      "text": "도착하면 전화해 줘"
+    }
+  },
+  "readDelaysMs": {
+    "엄마": 1500,
+    "민지": 5000,
+    "어머니": 3000,
+    "누나": 7000,
+    "철수": 2000,
+    "영호": 4000,
+    "민석": 9000,
+    "종민": null,
+    "김 팀장": 2500,
+    "박 대리": 6000
+  }
+}

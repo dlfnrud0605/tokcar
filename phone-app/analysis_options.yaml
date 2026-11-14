@@ -1,0 +1,7 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # 화면 코드는 낮/밤 색(K)과 크기 배율(u)을 전역에서 읽는다. const 로 만든 위젯은 다시 그려지지 않아서 낮/밤이 바뀔 때 색이 남으므로 const 를 강제하지 않는다.
+    prefer_const_constructors: false
+    prefer_const_literals_to_create_immutables: false

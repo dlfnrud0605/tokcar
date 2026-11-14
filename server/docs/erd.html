@@ -1,0 +1,347 @@
+<title>TokCar 서버 ERD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 레이아웃: 위 전체 관계도 → 아래 테이블별 카드(칸 목록) → 결정 이유 → 물어볼 것. TokCar 앱의 남색·경로 초록 */
+:root{
+  --bg:#F5F7FB; --surface:#FFFFFF; --ink:#18213A; --sub:#58637D; --line:#DCE2EE;
+  --accent:#0E8F6E; --accent-soft:#E2F5EE; --navy:#2A5FE0; --navy-soft:#E6EDFC;
+  --muted-soft:#ECEEF3; --warn:#B4541A; --warn-soft:#FCEBDD; --code-bg:#EEF1F7;
+  --display:"IBM Plex Sans KR","Noto Sans KR",system-ui,sans-serif;
+  --body:"Noto Sans KR",system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1424; --surface:#171E33; --ink:#E7ECF7; --sub:#9AA6C2; --line:#2A3452;
+  --accent:#2BD4A0; --accent-soft:#123B33; --navy:#7FA4FF; --navy-soft:#1C2A52;
+  --muted-soft:#222A40; --warn:#F2A26B; --warn-soft:#3A2618; --code-bg:#11182B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1424; --surface:#171E33; --ink:#E7ECF7; --sub:#9AA6C2; --line:#2A3452;
+  --accent:#2BD4A0; --accent-soft:#123B33; --navy:#7FA4FF; --navy-soft:#1C2A52;
+  --muted-soft:#222A40; --warn:#F2A26B; --warn-soft:#3A2618; --code-bg:#11182B; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.7 var(--body);padding-inline:16px}
+.wrap{max-width:1080px;margin:0 auto;padding-block:40px 80px}
+h1{font:700 clamp(28px,4vw,38px)/1.25 var(--display);margin:0 0 8px;text-wrap:balance}
+.ver{display:inline-block;font:600 12px var(--mono);color:var(--accent);background:var(--accent-soft);padding:2px 8px;border-radius:4px;margin-bottom:12px}
+.lead{color:var(--sub);max-width:68ch;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;font-size:13px}
+section{margin-top:52px}
+h2{font:700 22px/1.3 var(--display);margin:0 0 16px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+h3{font:700 16px var(--display);margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+p,li{max-width:70ch}
+code{font:13px var(--mono);background:var(--code-bg);padding:1px 5px;border-radius:4px}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;overflow-x:auto}
+.tag{font:600 11px var(--mono);padding:2px 8px;border-radius:4px;white-space:nowrap}
+.p1{background:var(--accent-soft);color:var(--accent)}
+.p2{background:var(--navy-soft);color:var(--navy)}
+.opt{background:var(--muted-soft);color:var(--sub)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:16px}
+.tbl{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 16px 8px;min-width:0}
+.tbl > p{margin:6px 0 10px;color:var(--sub);font-size:14px}
+.cols{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+td{padding:6px 8px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{font-family:var(--mono);white-space:nowrap;font-weight:600}
+td:nth-child(2){font-family:var(--mono);color:var(--sub);white-space:nowrap}
+.k{font:600 10px var(--mono);padding:1px 5px;border-radius:3px;margin-left:4px;background:var(--warn-soft);color:var(--warn)}
+.why{display:grid;gap:12px}
+.why div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.why b{font-family:var(--display)}
+.q{counter-reset:q;list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.q li{counter-increment:q;position:relative;padding:12px 16px 12px 48px;background:var(--surface);border:1px solid var(--line);border-radius:10px;max-width:none}
+.q li::before{content:counter(q);position:absolute;left:16px;top:12px;font:700 15px var(--mono);color:var(--accent)}
+</style>
+
+<div class="wrap">
+<span class="ver">v1.2 · 1단계 구현됨</span>
+<h1>TokCar 가족 서버 ERD</h1>
+<p class="lead">앱 전체 기능(가입 · 친구 · 방 · 대화 · 위치 · 경로 공유 · 푸시)을 기준으로 잡고, 실시간으로 계속 바뀌는 값은 DB에 두지 않으며, 단계마다 만들 테이블을 표시했다. id는 모두 서버가 매기는 숫자(BIGINT). DB는 PostgreSQL(AWS RDS). 로컬은 H2를 PostgreSQL 모드로. 스키마는 서버의 Flyway <code>V1__init.sql</code>.</p>
+<div class="legend">
+  <span class="tag p1">1단계</span><span>가계정 · 친구 목록 · 대화 · 위치 · 경로 공유</span>
+  <span class="tag p2">2단계</span><span>가입 · 친구 추가 · 방 만들기 · 푸시</span>
+  <span class="tag opt">선택</span><span>서버에 둘지 정해야 함</span>
+</div>
+
+<section>
+<h2>관계도</h2>
+<p>모든 칸을 다 그림. 칸마다 자세한 설명은 아래 「테이블」.</p>
+<div class="diagram">
+<pre class="mermaid">
+erDiagram
+    USERS ||--o{ ROOM_MEMBERS : "속함"
+    ROOMS ||--o{ ROOM_MEMBERS : "가짐"
+    ROOMS ||--o{ MESSAGES : "담음"
+    USERS ||--o{ MESSAGES : "보냄"
+    MESSAGES ||--o| MESSAGE_LOCATIONS : "현재 위치면"
+    MESSAGES ||--o| ROUTE_SHARES : "경로 공유면"
+    USERS ||--o{ FRIENDSHIPS : "추가함"
+    USERS ||--o{ DEVICES : "가짐"
+    ROOMS ||--o{ ROOM_PLACES : "간 곳"
+
+    USERS {
+        bigint id PK
+        varchar login_id UK "로그인 아이디"
+        varchar password_hash "BCrypt"
+        varchar phone_e164 UK "번호 하나당 아이디 하나"
+        char country
+        varchar name
+        varchar status_msg
+        varchar profile_image_key "사진, 없으면 NULL"
+        int failed_logins
+        timestamp created_at
+    }
+    ROOMS {
+        bigint id PK
+        varchar name
+        bigint created_by FK
+        bigint last_msg_id
+        timestamp created_at
+    }
+    ROOM_MEMBERS {
+        bigint room_id PK,FK
+        bigint user_id PK,FK
+        bigint last_read_msg_id "여기까지 읽음"
+        timestamp joined_at
+    }
+    MESSAGES {
+        bigint id PK
+        bigint room_id FK
+        bigint sender_id FK "시스템이면 NULL"
+        varchar kind "TEXT LOCATION ROUTE SYSTEM"
+        varchar text "TEXT SYSTEM"
+        timestamp created_at "생성 일시"
+    }
+    MESSAGE_LOCATIONS {
+        bigint message_id PK,FK
+        varchar place_name
+        varchar place_addr
+        double lat
+        double lon
+    }
+    ROUTE_SHARES {
+        bigint message_id PK,FK
+        varchar state "ACTIVE ARRIVED STOPPED"
+        varchar from_addr "출발"
+        double from_lat
+        double from_lon
+        varchar dest_name "도착"
+        varchar dest_addr
+        double dest_lat
+        double dest_lon
+        timestamp ended_at "진행 중이면 NULL"
+    }
+    FRIENDSHIPS {
+        bigint user_id PK,FK
+        bigint friend_id PK,FK
+        timestamp created_at
+    }
+    DEVICES {
+        bigint id PK
+        bigint user_id FK
+        varchar platform "ANDROID IOS CAR"
+        varchar fcm_token UK
+        timestamp last_seen_at
+    }
+    ROOM_PLACES {
+        bigint id PK
+        bigint room_id FK
+        varchar name
+        varchar addr
+        double lat
+        double lon "방마다 최대 3개, id 큰 순"
+    }
+    PHONE_VERIFICATIONS {
+        bigint id PK
+        varchar phone_e164
+        varchar purpose
+        varchar code_hash
+        int attempts
+        timestamp expires_at
+        timestamp verified_at
+    }
+</pre>
+</div>
+</section>
+
+<section>
+<h2>테이블</h2>
+<div class="grid">
+
+<div class="tbl">
+<h3>users <span class="tag p1">1단계</span></h3>
+<p>계정. 로그인 아이디는 id로 쓰지 않음(바꿀 수 있고, 가족에게 보이지 않게).</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td>자동 증가</td></tr>
+<tr><td>login_id<span class="k">UK</span></td><td>VARCHAR(20)</td><td>로그인 아이디(소문자)</td></tr>
+<tr><td>password_hash</td><td>VARCHAR(100)</td><td>BCrypt. 원문 저장 안 함</td></tr>
+<tr><td>phone_e164<span class="k">UK</span></td><td>VARCHAR(16)</td><td>+821012345678. 번호 하나당 아이디 하나</td></tr>
+<tr><td>country</td><td>CHAR(2)</td><td>KR 등</td></tr>
+<tr><td>name</td><td>VARCHAR(20)</td><td>보이는 이름</td></tr>
+<tr><td>status_msg</td><td>VARCHAR(60)</td><td>상태 메시지(친구 목록)</td></tr>
+<tr><td>profile_image_key</td><td>VARCHAR(200) NULL</td><td>프로필 사진 파일 위치(로컬은 서버 폴더, AWS는 S3 키). 전체 URL이 아니라 키만 저장. 없으면 NULL → 앱이 기본 그림</td></tr>
+<tr><td>failed_logins</td><td>INT</td><td>연속 실패. 5면 잠김</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td></td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>rooms <span class="tag p1">1단계</span></h3>
+<p>대화방. 1단계는 가계정 둘이 든 방 하나만 미리 만들어 둠.</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td></td></tr>
+<tr><td>name</td><td>VARCHAR(30)</td><td>우리 가족</td></tr>
+<tr><td>created_by<span class="k">FK</span></td><td>BIGINT</td><td>users.id</td></tr>
+<tr><td>last_msg_id</td><td>BIGINT</td><td>방 목록 정렬용(최신 대화 순). 메시지 저장 때 같이 갱신</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td></td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>room_places <span class="tag p1">1단계</span></h3>
+<p>차량 앱 목적지 창의 「이 방에서 간 곳」. 이 방에서 경로 안내를 시작한 곳을 방마다 최대 3개. 순서는 id로: 새로 넣으면 id가 가장 커지고, 이미 있는 곳을 다시 안내하면 지우고 다시 넣어 맨 위로 올림. 4개째면 id가 가장 작은 것을 지움.</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td></td></tr>
+<tr><td>room_id<span class="k">FK</span></td><td>BIGINT</td><td>INDEX(room_id, id): <code>ORDER BY id DESC</code> = 최신순</td></tr>
+<tr><td>name · addr</td><td>VARCHAR</td><td>UNIQUE(room_id, name, addr): 같은 곳은 한 줄만</td></tr>
+<tr><td>lat · lon</td><td>DOUBLE</td><td>목적지로 다시 고를 때 씀</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>room_members <span class="tag p1">1단계</span></h3>
+<p>누가 어느 방에 있는지 + 어디까지 읽었는지. 읽음을 메시지마다 따로 저장하지 않음.</p>
+<div class="cols"><table>
+<tr><td>room_id<span class="k">PK FK</span></td><td>BIGINT</td><td>rooms.id</td></tr>
+<tr><td>user_id<span class="k">PK FK</span></td><td>BIGINT</td><td>users.id. INDEX(user_id): 내 방 목록</td></tr>
+<tr><td>last_read_msg_id</td><td>BIGINT</td><td>여기까지 읽음. 안 읽은 사람 수 = 이 값이 메시지 id보다 작은 멤버 수</td></tr>
+<tr><td>joined_at</td><td>TIMESTAMP</td><td>들어오기 전 메시지는 안 보이게 할 때 씀</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>messages <span class="tag p1">1단계</span></h3>
+<p>대화 한 줄. 모든 종류가 같이 쓰는 칸만 둠. 종류별 내용은 아래 두 테이블(JPA <code>@Inheritance(JOINED)</code>와 같은 모양).</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td>전체에서 커지는 값(순서 = id)</td></tr>
+<tr><td>room_id<span class="k">FK</span></td><td>BIGINT</td><td>INDEX(room_id, id): 방의 최신 N개 · 이후 것</td></tr>
+<tr><td>sender_id<span class="k">FK</span></td><td>BIGINT NULL</td><td>시스템 안내면 NULL</td></tr>
+<tr><td>kind</td><td>VARCHAR(10)</td><td>TEXT(말풍선) · LOCATION(현재 위치 카드) · ROUTE(경로 공유 카드) · SYSTEM(안내)</td></tr>
+<tr><td>text</td><td>VARCHAR(1000) NULL</td><td>TEXT · SYSTEM</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td></td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>message_locations <span class="tag p1">1단계</span></h3>
+<p>「내 위치 보내기」로 보낸 그 순간의 위치. messages(kind = LOCATION)와 1:1. 보낸 뒤 안 바뀜. [지도 보기]에서 이 좌표에 마커를 찍음.</p>
+<div class="cols"><table>
+<tr><td>message_id<span class="k">PK FK</span></td><td>BIGINT</td><td>messages.id</td></tr>
+<tr><td>place_name</td><td>VARCHAR(60)</td><td>구 · 동 이름(비면 주소로)</td></tr>
+<tr><td>place_addr</td><td>VARCHAR(120)</td><td>전체 주소</td></tr>
+<tr><td>lat · lon</td><td>DOUBLE</td><td>보낸 지 1년(messages.created_at 기준)이 지나면 이 행만 지움. 하루 한 번 정리 작업. 메시지는 「위치를 보냈어요」로 남음</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>route_shares <span class="tag p1">1단계</span></h3>
+<p>경로 공유 카드의 기록. messages(kind = ROUTE)와 1:1. 공유를 시작할 때, 목적지를 바꿀 때, 끝날 때만 씀.</p>
+<div class="cols"><table>
+<tr><td>message_id<span class="k">PK FK</span></td><td>BIGINT</td><td>messages.id</td></tr>
+<tr><td colspan="3">방 · 보낸 사람은 messages 에서 조인. 「이 방에 진행 중인 내 공유」는 시작할 때만 찾고, 진행 중엔 서버 메모리에 둠. INDEX(state)</td></tr>
+<tr><td>state</td><td>VARCHAR(8)</td><td>ACTIVE · ARRIVED · STOPPED</td></tr>
+<tr><td>dest_name · dest_addr</td><td>VARCHAR</td><td>목적지(바뀌면 덮어씀)</td></tr>
+<tr><td>dest_lat · dest_lon</td><td>DOUBLE</td><td>지도의 깃발</td></tr>
+<tr><td>from_addr</td><td>VARCHAR(120)</td><td>출발 주소</td></tr>
+<tr><td>from_lat · from_lon</td><td>DOUBLE</td><td>출발 좌표. 차 위치를 아직 못 받았을 때 지도에서 출발점으로 씀</td></tr>
+<tr><td>ended_at</td><td>TIMESTAMP NULL</td><td>도착 · 종료 시각. 진행 중이면 NULL. 시작 시각은 messages.created_at</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>실시간 상태 (DB 아님) <span class="tag p1">1단계</span></h3>
+<p>경로 공유 중 계속 바뀌는 값. 서버 메모리 <code>Map&lt;message_id, LiveRoute&gt;</code>에 마지막 값만 두고, 받자마자 WebSocket으로 전달. 새로 연결한 폰에는 이 마지막 값을 줌. 서버를 여러 대로 늘리면 Redis로 옮김.</p>
+<div class="cols"><table>
+<tr><td>car_lat · car_lon</td><td>double</td><td>차의 지금 위치(지도의 프로필 마커)</td></tr>
+<tr><td>remain_sec · pct</td><td>int</td><td>남은 시간(초) · 진행률(0~100)</td></tr>
+<tr><td>eta_at</td><td>Instant</td><td>도착 예정</td></tr>
+<tr><td>traffic</td><td>List</td><td>[[from,to,"fast"],…]. null = 정보 없음</td></tr>
+<tr><td>updated_at</td><td>Instant</td><td>오래 안 오면(예: 1분) 「연결 끊김」 표시용</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>friendships <span class="tag p1">1단계</span></h3>
+<p>내 친구 목록. 한쪽 방향(카카오톡처럼 내가 추가하면 내 목록에만). 1단계는 조회만(가계정 둘이 서로 친구로 미리 들어감). 번호로 찾아서 추가는 2단계.</p>
+<div class="cols"><table>
+<tr><td>user_id<span class="k">PK FK</span></td><td>BIGINT</td><td>추가한 사람</td></tr>
+<tr><td>friend_id<span class="k">PK FK</span></td><td>BIGINT</td><td>추가된 사람</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td></td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>phone_verifications <span class="tag p2">2단계</span></h3>
+<p>문자 인증번호. 가입 · 아이디 찾기 · 비밀번호 재설정.</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td></td></tr>
+<tr><td>phone_e164</td><td>VARCHAR(16)</td><td>INDEX</td></tr>
+<tr><td>purpose</td><td>VARCHAR(10)</td><td>SIGNUP · FIND_ID · RESET_PW</td></tr>
+<tr><td>code_hash</td><td>VARCHAR(100)</td><td>6자리 원문 저장 안 함</td></tr>
+<tr><td>attempts</td><td>INT</td><td>틀린 횟수</td></tr>
+<tr><td>expires_at · verified_at</td><td>TIMESTAMP</td><td>3분 유효 등</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>Redis (DB 아님) <span class="tag p2">2단계</span></h3>
+<p>만료되는 값과 실시간 값. 1단계는 서버 메모리로 대신하고, AWS에 올릴 때 Redis로 옮김. 재시작해도 남게 AOF 저장을 켬.</p>
+<div class="cols"><table>
+<tr><td>refresh:{token_hash}</td><td>Hash · TTL</td><td>user_id, device_id. TTL = 리프레시 토큰 유효 기간(예: 30일). 만료되면 저절로 사라짐</td></tr>
+<tr><td>user:{id}:refresh</td><td>Set</td><td>그 사람의 token_hash 목록. 「모든 기기에서 로그아웃」 · 기기 목록용</td></tr>
+<tr><td>live:{message_id}</td><td>Hash · TTL</td><td>경로 공유 실시간 상태(위 「실시간 상태」). 서버 여러 대일 때 같이 봄</td></tr>
+<tr><td>room:{id} 채널</td><td>Pub/Sub</td><td>서버가 여러 대일 때 WebSocket 메시지를 다른 서버의 연결로 넘김</td></tr>
+</table></div>
+</div>
+
+<div class="tbl">
+<h3>devices <span class="tag p2">2단계</span></h3>
+<p>푸시를 받을 기기. 한 사람이 차 + 폰 여럿.</p>
+<div class="cols"><table>
+<tr><td>id<span class="k">PK</span></td><td>BIGINT</td><td></td></tr>
+<tr><td>user_id<span class="k">FK</span></td><td>BIGINT</td><td></td></tr>
+<tr><td>platform</td><td>VARCHAR(8)</td><td>ANDROID · IOS · CAR</td></tr>
+<tr><td>fcm_token<span class="k">UK</span></td><td>VARCHAR(255) NULL</td><td>차(구글 서비스 없음)면 NULL</td></tr>
+<tr><td>last_seen_at</td><td>TIMESTAMP</td><td>오래된 기기 정리</td></tr>
+</table></div>
+</div>
+
+
+
+</div>
+</section>
+
+<section>
+<h2>이렇게 나눈 이유</h2>
+<div class="why">
+  <div><b>읽음은 room_members.last_read_msg_id 한 칸.</b> 메시지마다 「누가 읽었나」를 저장하면 메시지 수 × 멤버 수만큼 행이 늘어난다. 카카오톡처럼 「어디까지 읽었나」만 두면 멤버당 한 칸이고, 안 읽은 사람 수는 계산으로 나온다.</div>
+  <div><b>messages는 공통 칸만, 종류별 내용은 따로.</b> 대부분이 글이라 위치 · 경로 칸을 messages에 두면 거의 모든 행이 빈 칸(NULL)이 된다. 공통 + 종류별 테이블로 나누면 JPA <code>@Inheritance(JOINED)</code>와 그대로 맞고, 위치 보관 기간이 지나면 message_locations 행만 지우면 된다. 방 메시지를 가져올 때 LEFT JOIN 두 번이 늘지만 한 번에 50개라 부담이 작다 [추정].</div>
+  <div><b>차 위치 · 남은 시간 · traffic은 DB에 안 둠.</b> 5초마다 바뀌는 실시간 값이라 저장하면 UPDATE만 계속 쌓이고, 차 위치가 디스크에 남는다. 서버 메모리에 마지막 값만 두고 WebSocket으로 바로 넘긴다. 서버가 재시작돼 사라져도 차가 5초 안에 다시 보낸다.</div>
+  <div><b>경로선(Directions 결과)은 어디에도 없음.</b> 네이버 Maps 약관 제7조 ⑨⑪(저장 · 재사용 금지). 차 위치(pos)와 목적지만 두고, 폰이 지도를 열 때 직접 호출한다.</div>
+  <div><b>「이 방에서 간 곳」은 route_shares로 못 대신함.</b> 경로 안내를 해도 공유는 안 할 수 있어서(목적지 창: 「안내 중에 목적지를 바꿔도 공유는 시작되지 않아요」) 경로 공유 기록에서 뽑으면 빠지는 곳이 생긴다. 그래서 따로 두고, 위치 기록이 쌓이지 않게 방마다 3개만 남긴다. 순서는 id로 충분해서 시각 칸을 두지 않는다.</div>
+  <div><b>앱에만 두는 것.</b> 즐겨찾기, 내 최근 목적지(navRecent), 지금 안내 중인 목적지, 내비 검색 결과, 설정(실제 내비 쓰기 등)은 기기 상태라 서버에 안 둔다.</div>
+</div>
+</section>
+
+<section>
+<h2>정한 것</h2>
+<ol class="q">
+  <li><b>현재 위치 보관</b>: 1년. 지나면 message_locations 행만 지움(하루 한 번).</li>
+  <li><b>이 방에서 간 곳</b>: 방마다 3개, 이름 + 주소가 같으면 같은 곳.</li>
+  <li><b>친구</b>: 한쪽 방향.</li>
+  <li><b>시스템 메시지</b>: 서버가 만들어 messages(kind = SYSTEM)에 저장(2단계 방 만들기 · 초대부터).</li>
+  <li><b>DB</b>: PostgreSQL.</li>
+</ol>
+</section>
+</div>

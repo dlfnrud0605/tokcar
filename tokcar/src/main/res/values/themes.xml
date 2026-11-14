@@ -1,0 +1,9 @@
+<resources>
+    <!-- 화면은 모두 Compose 로 그림. 창 배경만 하늘색 바탕(#EEF1F7)으로 둬서 처음 뜰 때 흰 화면이 번쩍이지 않게 함 -->
+    <style name="Theme.TokCar" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/tk_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <color name="tk_bg">#EEF1F7</color>
+</resources>

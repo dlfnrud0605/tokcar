@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 옛 앱(:app)과 같은 권한 목록. Pleos SDK 가 기능별로 이 권한을 확인함 -->
+    <!-- Pleos Vehicle SDK: 기어(주행 중이면 글 입력을 막고 말하기만 남김) 등 차량 정보 -->
+    <uses-permission android:name="pleos.car.permission.CAR_DOORS" />
+    <uses-permission android:name="pleos.car.permission.CAR_INFO" />
+    <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
+    <uses-permission android:name="pleos.car.permission.CAR_ENERGY" />
+    <!-- Pleos NaviHelper SDK: 길안내·경유지·검색 -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE_SEARCH" />
+    <uses-permission android:name="pleos.car.permission.NAVI_CUSTOM_MAP" />
+    <!-- 위치, 음성 인식(말하기)·음성 합성(받은 메시지 읽어 주기) -->
+    <uses-permission android:name="pleos.car.permission.FUSED_LOCATION" />
+    <uses-permission android:name="pleos.car.permission.STT_SERVICE" />
+    <uses-permission android:name="pleos.car.permission.TTS_SERVICE" />
+    <!-- 가족 서버(REST + WebSocket) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TokCar">
+        <!-- 방향이 바뀌어도 화면을 다시 만들지 않음(상태는 ViewModel 이 들고 있음) -->
+        <activity
+            android:name=".TokCarActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden"
+            android:windowSoftInputMode="adjustResize">
+            <!-- 주행 중에도 앱이 열리도록 Distraction Optimized 선언(옛 앱과 같음) -->
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

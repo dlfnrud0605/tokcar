@@ -1,0 +1,28 @@
+# 빌드 결과
+build/
+.gradle/
+.kotlin/
+.idea/
+*.iml
+.cxx/
+.externalNativeBuild/
+captures/
+
+# 비밀 · 내 PC 설정 (절대 올리지 않음)
+local.properties
+keystore.properties
+*.jks
+*.keystore
+env.json
+server/secrets.properties
+
+# 서버 로컬 DB · 로그
+server/data/
+*.log
+
+# Flutter
+phone-app/.dart_tool/
+phone-app/.flutter-plugins
+phone-app/.flutter-plugins-dependencies
+
+.DS_Store
