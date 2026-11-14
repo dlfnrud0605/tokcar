@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TokCar 시연 영상</title>
+<meta name="description" content="TokCar: 운전 중에도 가족과 대화하고 경로를 나누는 Pleos 차량용 앱의 시연 영상">
+<style>
+  :root { --bg:#f3f6fb; --card:#fff; --text:#12203a; --sub:#5b6b86; --line:#dbe3f0; --accent:#1f5eff; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e141f; --card:#162030; --text:#e8eef9; --sub:#9db0cc; --line:#263650; --accent:#6c9bff; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.65 system-ui,-apple-system,"Segoe UI","Noto Sans KR","Malgun Gothic",sans-serif; }
+  main { max-width:960px; margin:0 auto; padding:32px 16px 56px; }
+  h1 { font-size:1.7rem; margin:0 0 6px; }
+  h2 { font-size:1.15rem; margin:0 0 12px; }
+  p.lead { margin:0 0 28px; color:var(--sub); }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:20px; }
+  video { width:100%; border-radius:10px; background:#000; display:block; }
+  .short { display:flex; justify-content:center; }
+  .short iframe { width:100%; max-width:360px; aspect-ratio:9/16; border:0; border-radius:10px; }
+  .note { color:var(--sub); font-size:.92rem; margin:10px 2px 0; }
+  a { color:var(--accent); }
+  nav a { display:inline-block; margin:0 14px 6px 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>TokCar</h1>
+  <p class="lead">운전 중에도 가족과 대화하고 경로를 나누는 Pleos 차량용 앱 · 시연 영상</p>
+
+  <section>
+    <h2>시연 영상 (80초, 소리 포함)</h2>
+    <video controls preload="metadata" playsinline src="demo/tokcar_demo.mp4"></video>
+    <p class="note">왼쪽이 차량 앱(Pleos Connect 에뮬레이터), 오른쪽이 가족 폰 앱입니다. 소리가 나오니 음량을 확인해 주세요.</p>
+  </section>
+
+  <section>
+    <h2>홍보용 쇼츠</h2>
+    <div class="short"><iframe src="https://www.youtube.com/embed/IoLM8zKRTpA" title="TokCar 홍보용 쇼츠" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+    <p class="note">재생이 안 되면 <a href="https://youtube.com/shorts/IoLM8zKRTpA">유튜브에서 열기</a></p>
+  </section>
+
+  <nav>
+    <a href="https://github.com/dlfnrud0605/tokcar">GitHub 저장소 (소스 · README · APK)</a>
+  </nav>
+</main>
+</body>
+</html>
