@@ -5,6 +5,8 @@
 
 ## 시연 영상
 
+[![데모 영상 미리보기 — 누르면 80초 영상(소리 포함)이 열립니다](docs/demo/tokcar_demo_preview.gif)](docs/demo/tokcar_demo.mp4)
+
 **[▶ 데모 영상 보기 (80초, 소리 포함)](docs/demo/tokcar_demo.mp4)** — 왼쪽이 차량 앱(Pleos Connect 에뮬레이터), 오른쪽이 가족 폰 앱입니다. 서버를 켠 상태에서 녹화했습니다.
 
 **[▶ 홍보용 쇼츠 (YouTube)](https://youtube.com/shorts/IoLM8zKRTpA)**
